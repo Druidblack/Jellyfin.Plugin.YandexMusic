@@ -1,0 +1,151 @@
+<div id="YandexMusicConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox,emby-select">
+    <div data-role="content">
+        <div class="content-primary">
+            <form id="YandexMusicConfigForm">
+                <div class="sectionTitleContainer flex align-items-center">
+                    <h2 class="sectionTitle">Yandex Music Metadata</h2>
+                </div>
+
+                <div class="verticalSection">
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="OAuthToken">OAuth token</label>
+                        <input id="OAuthToken" is="emby-input" type="password" autocomplete="off" />
+                        <div class="fieldDescription">Optional. Leave empty for requests that work without authorization.</div>
+                    </div>
+
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="Language">Metadata language</label>
+                        <select id="Language" is="emby-select">
+                            <option value="ru">Russian</option>
+                            <option value="en">English</option>
+                        </select>
+                        <div class="fieldDescription">Preferred language for data returned by Yandex Music.</div>
+                    </div>
+
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="ArtistImageSize">Artist image size</label>
+                        <select id="ArtistImageSize" is="emby-select">
+                            <option value="1000">1000x1000</option>
+                            <option value="0">Original</option>
+                        </select>
+                        <div class="fieldDescription">Choose the size used for artist images and artist search preview images.</div>
+                    </div>
+
+                    <div class="selectContainer">
+                        <label class="selectLabel" for="AlbumImageSize">Album image size</label>
+                        <select id="AlbumImageSize" is="emby-select">
+                            <option value="1000">1000x1000</option>
+                            <option value="0">Original</option>
+                        </select>
+                        <div class="fieldDescription">Choose the size used for album covers and album search preview images.</div>
+                    </div>
+
+                    <div class="inputContainer">
+                        <label class="inputLabel inputLabelUnfocused" for="SearchLimit">Search result limit</label>
+                        <input id="SearchLimit" is="emby-input" type="number" min="1" max="20" />
+                        <div class="fieldDescription">Maximum number of matches shown during Identify. Default: 10.</div>
+                    </div>
+
+                    <label class="emby-checkbox-label">
+                        <input id="ReplaceArtistName" type="checkbox" is="emby-checkbox" />
+                        <span>Use artist name from Yandex Music</span>
+                    </label>
+
+                    <label class="emby-checkbox-label">
+                        <input id="ReplaceAlbumName" type="checkbox" is="emby-checkbox" />
+                        <span>Use album title from Yandex Music</span>
+                    </label>
+
+                    <label class="emby-checkbox-label">
+                        <input id="FetchArtistBiography" type="checkbox" is="emby-checkbox" />
+                        <span>Download artist biography when available</span>
+                    </label>
+
+                    <label class="emby-checkbox-label">
+                        <input id="UseArtistImagesAsBackdrops" type="checkbox" is="emby-checkbox" />
+                        <span>Also use artist images as backdrops</span>
+                    </label>
+                    <div class="fieldDescription">When enabled, Yandex Music artist images are also offered as backdrop images in Jellyfin. Backdrops are always requested in original quality.</div>
+                </div>
+
+                <div>
+                    <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                        <span>Save</span>
+                    </button>
+                </div>
+
+                <div class="fieldDescription" style="margin-top:2em">
+                    This plugin uses api.music.yandex.net.
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        (function () {
+            const pluginId = 'd9be9e10-3d62-4ad3-8c73-8e483f9adf10';
+            const page = document.querySelector('#YandexMusicConfigPage');
+            const form = document.querySelector('#YandexMusicConfigForm');
+
+            function normalizeSize(value) {
+                return Number(value) === 0 ? '0' : '1000';
+            }
+
+            function getEffectiveSize(currentValue, legacyValue) {
+                if (currentValue === 0 || currentValue === '0') {
+                    return '0';
+                }
+
+                if (typeof currentValue === 'number' && currentValue > 0) {
+                    return '1000';
+                }
+
+                if (typeof currentValue === 'string' && currentValue.length > 0) {
+                    return normalizeSize(currentValue);
+                }
+
+                return normalizeSize(legacyValue);
+            }
+
+            page.addEventListener('pageshow', function () {
+                Dashboard.showLoadingMsg();
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    document.querySelector('#OAuthToken').value = config.OAuthToken || '';
+                    document.querySelector('#Language').value = config.Language || 'ru';
+                    document.querySelector('#ArtistImageSize').value = getEffectiveSize(config.ArtistImageSize, config.ImageSize);
+                    document.querySelector('#AlbumImageSize').value = getEffectiveSize(config.AlbumImageSize, config.ImageSize);
+                    document.querySelector('#SearchLimit').value = config.SearchLimit || 10;
+                    document.querySelector('#ReplaceArtistName').checked = config.ReplaceArtistName !== false;
+                    document.querySelector('#ReplaceAlbumName').checked = config.ReplaceAlbumName !== false;
+                    document.querySelector('#FetchArtistBiography').checked = config.FetchArtistBiography !== false;
+                    document.querySelector('#UseArtistImagesAsBackdrops').checked = config.UseArtistImagesAsBackdrops === true;
+                    Dashboard.hideLoadingMsg();
+                });
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                Dashboard.showLoadingMsg();
+
+                ApiClient.getPluginConfiguration(pluginId).then(function (config) {
+                    config.OAuthToken = document.querySelector('#OAuthToken').value.trim();
+                    config.Language = document.querySelector('#Language').value;
+                    config.ArtistImageSize = document.querySelector('#ArtistImageSize').value === '0' ? 0 : 1000;
+                    config.AlbumImageSize = document.querySelector('#AlbumImageSize').value === '0' ? 0 : 1000;
+                    config.ImageSize = config.ArtistImageSize;
+                    config.SearchLimit = parseInt(document.querySelector('#SearchLimit').value, 10) || 10;
+                    config.ReplaceArtistName = document.querySelector('#ReplaceArtistName').checked;
+                    config.ReplaceAlbumName = document.querySelector('#ReplaceAlbumName').checked;
+                    config.FetchArtistBiography = document.querySelector('#FetchArtistBiography').checked;
+                    config.UseArtistImagesAsBackdrops = document.querySelector('#UseArtistImagesAsBackdrops').checked;
+
+                    ApiClient.updatePluginConfiguration(pluginId, config).then(function (result) {
+                        Dashboard.processPluginConfigurationUpdateResult(result);
+                    });
+                });
+
+                return false;
+            });
+        })();
+    </script>
+</div>
