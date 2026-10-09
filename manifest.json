@@ -6,7 +6,7 @@
         "description": "Metadata and images for music artists and albums from Yandex Music.",
         "owner": "Druidblack",
         "category": "Music",
-        "imageUrl": "https://raw.githubusercontent.com/Druidblack/Jellyfin.Plugin.YandexMusic/blob/main/images/yandexmusic.jpg",
+        "imageUrl": "https://raw.githubusercontent.com/Druidblack/Jellyfin.Plugin.YandexMusic/main/images/yandexmusic.jpg",
         "versions": [
             {
                 "version": "1.0.0.0",
