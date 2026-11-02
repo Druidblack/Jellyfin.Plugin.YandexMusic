@@ -8,11 +8,6 @@ namespace Jellyfin.Plugin.YandexMusic.Configuration;
 public sealed class PluginConfiguration : BasePluginConfiguration
 {
     /// <summary>
-    /// Gets or sets an optional Yandex Music OAuth token.
-    /// </summary>
-    public string OAuthToken { get; set; } = string.Empty;
-
-    /// <summary>
     /// Gets or sets the preferred language sent to the API.
     /// </summary>
     public string Language { get; set; } = "ru";

@@ -7,12 +7,6 @@
                 </div>
 
                 <div class="verticalSection">
-                    <div class="inputContainer">
-                        <label class="inputLabel inputLabelUnfocused" for="OAuthToken">OAuth token</label>
-                        <input id="OAuthToken" is="emby-input" type="password" autocomplete="off" />
-                        <div class="fieldDescription">Optional. Leave empty for requests that work without authorization.</div>
-                    </div>
-
                     <div class="selectContainer">
                         <label class="selectLabel" for="Language">Metadata language</label>
                         <select id="Language" is="emby-select">
@@ -110,7 +104,6 @@
             page.addEventListener('pageshow', function () {
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                    document.querySelector('#OAuthToken').value = config.OAuthToken || '';
                     document.querySelector('#Language').value = config.Language || 'ru';
                     document.querySelector('#ArtistImageSize').value = getEffectiveSize(config.ArtistImageSize, config.ImageSize);
                     document.querySelector('#AlbumImageSize').value = getEffectiveSize(config.AlbumImageSize, config.ImageSize);
@@ -128,7 +121,6 @@
                 Dashboard.showLoadingMsg();
 
                 ApiClient.getPluginConfiguration(pluginId).then(function (config) {
-                    config.OAuthToken = document.querySelector('#OAuthToken').value.trim();
                     config.Language = document.querySelector('#Language').value;
                     config.ArtistImageSize = document.querySelector('#ArtistImageSize').value === '0' ? 0 : 1000;
                     config.AlbumImageSize = document.querySelector('#AlbumImageSize').value === '0' ? 0 : 1000;

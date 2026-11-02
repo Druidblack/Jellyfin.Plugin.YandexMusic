@@ -386,11 +386,6 @@ internal sealed class YandexMusicApiClient
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 
         var config = Configuration;
-        if (!string.IsNullOrWhiteSpace(config.OAuthToken))
-        {
-            request.Headers.Authorization = new AuthenticationHeaderValue("OAuth", config.OAuthToken.Trim());
-        }
-
         if (!string.IsNullOrWhiteSpace(config.Language))
         {
             request.Headers.TryAddWithoutValidation("Accept-Language", config.Language.Trim());
