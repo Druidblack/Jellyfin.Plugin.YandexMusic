@@ -9,6 +9,14 @@
         "imageUrl": "https://raw.githubusercontent.com/Druidblack/Jellyfin.Plugin.YandexMusic/main/images/yandexmusic.jpg",
         "versions": [
             {
+                "version": "1.0.0.1",
+                "changelog": "Удалил OAuth авторизацию",
+                "targetAbi": "12.0",
+                "sourceUrl": "https://github.com/Druidblack/Jellyfin.Plugin.YandexMusic/releases/download/Release-1.0.0.1/Release-1.0.0.1.zip",
+                "checksum": "cacef1fe8e126bf3da41459e2fc9f35f",
+                "timestamp": "2026-11-01T01:00:00+00:00"
+            },
+            {
                 "version": "1.0.0.0",
                 "changelog": "Public release",
                 "targetAbi": "12.0",
